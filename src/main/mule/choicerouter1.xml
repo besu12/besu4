@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="choicerouter1Flow" doc:id="4681de59-d6f4-4aff-817d-1570c1049456" >
+		<http:listener doc:name="Listener" doc:id="36ebbcb3-bea8-4d4b-b84d-fb111e4c7707" config-ref="HTTP_Listener_config" path="/choice"/>
+		<set-variable value="#[message.attributes.airline]" doc:name="Set Variable" doc:id="2bbc414d-4e01-4bae-bb4d-8524db6bc4b2" variableName="airline"/>
+		<choice doc:name="Choice" doc:id="a9070aa2-480d-4c95-8caa-3ecffe74f6bf" >
+			<when expression='#[vars.airline == "american"]'>
+				<flow-ref doc:name="Flow Reference" doc:id="82d223c0-f053-44da-866f-29070b7dd6ed" name="choicerouter1Flow1"/>
+			</when>
+			<when expression='#[vars.airline == "delta"]'>
+				<flow-ref doc:name="Flow Reference" doc:id="83dbd9da-e5a7-4afa-93d4-9b7bf76f2181" name="choicerouter1Flow3"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="Flow Reference" doc:id="c8a1514e-ee81-4fd8-85e8-79c15de7d8f0" name="choicerouter1Flow2"/>
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="8e6f03f7-5e9c-48ee-9eaa-4dce4f440da5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="choicerouter1Flow1" doc:id="11c26715-78a7-4ca3-85d2-2a368859eeb4" >
+		<db:select doc:name="Select" doc:id="3cf3d422-6808-4964-96b2-d55ac63df725" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from american]]></db:sql>
+		</db:select>
+	</flow>
+	<flow name="choicerouter1Flow2" doc:id="cccb266c-21e7-411b-a00d-c72cf5bd9e77" >
+		<http:request method="GET" doc:name="Request" doc:id="e5cbff12-b1e4-45d5-a4ca-9914de422730" path="/united/flights" config-ref="HTTP_Request_configuration"/>
+	</flow>
+	<flow name="choicerouter1Flow3" doc:id="e89cc8da-bb19-4a42-9779-b7e9c17717f1" >
+		<ee:transform doc:name="Transform Message" doc:id="ca975297-ff52-45f3-9b67-02fd6e4d81e9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://soap.training.mulesoft.com/
+---
+{
+	ns0#listAllFlights: null
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="listAllFlights" doc:name="Consume" doc:id="220f0a42-6121-4791-a7f2-6c0094a3ac27" config-ref="Web_Service_Consumer_Config"/>
+	</flow>
+</mule>

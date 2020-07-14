@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="439915ea-affd-4fe6-adb8-e6738a93041e" >
+		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7901ecff-f5f5-4110-9019-7cbc6586f09e" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="ef40850e-37e6-43d8-843e-aa9a6bc9a2a6" >
+		<http:request-connection host="${HTTP_Request.host}" port="${HTTP_Request.port}" />
+	</http:request-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="c8c01f64-c32a-489d-bbb2-a5c6ce95d1b5" >
+		<wsc:connection wsdlLocation="${delta.location}" service="${delta.service}" port="${delta.port}" address="${delta.address}" />
+	</wsc:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="c5aacb8d-ec60-47b9-a3d7-c9c7b5a414a4" file="config.yaml" />
+</mule>
